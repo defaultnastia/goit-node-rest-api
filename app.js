@@ -4,6 +4,7 @@ import cors from "cors";
 
 import contactsRouter from "./routes/contactsRouter.js";
 import mongoose from "mongoose";
+import { DB_HOST } from "./config.js";
 
 const app = express();
 
@@ -21,9 +22,6 @@ app.use((err, req, res, next) => {
   const { status = 500, message = "Server error" } = err;
   res.status(status).json({ message });
 });
-
-const DB_HOST =
-  "mongodb+srv://goit_user:3TXgf2PMiuaGDg@goit.o8rkj.mongodb.net/db-contacts/?retryWrites=true&w=majority&appName=GoIT";
 
 mongoose
   .connect(DB_HOST)
