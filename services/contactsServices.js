@@ -1,6 +1,7 @@
 import * as fs from "node:fs/promises";
 import path from "node:path";
 import { v4 as uuidv4 } from "uuid";
+import Contact from "../models/Contact.js";
 
 const contactsPath = path.resolve("db", "contacts.json");
 
@@ -8,10 +9,8 @@ const rewriteContacts = async (newContacts) => {
   await fs.writeFile(contactsPath, JSON.stringify(newContacts, null, 2));
 };
 
-export async function listContacts() {
-  const allContacts = await fs.readFile(contactsPath);
-
-  return JSON.parse(allContacts);
+export function listContacts() {
+  return Contact.find();
 }
 
 export async function getContactById(contactId) {
