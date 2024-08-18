@@ -19,3 +19,7 @@ export function addContact(data) {
 export const updateContact = (id, data) => {
   return Contact.findByIdAndUpdate(id, data);
 };
+
+export const updateStatusContact = (id, isFavorite) => {
+  return Contact.findByIdAndUpdate(id, { favorite: isFavorite });
+};

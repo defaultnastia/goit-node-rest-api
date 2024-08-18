@@ -22,14 +22,19 @@ contactsRouter.post(
   contactsControllers.createContact
 );
 
-contactsRouter.put("/:id", isValidId, contactsControllers.updateContact);
-// contactsRouter.put(
-//   "/:id",
-//   isValidId,
-//   updateContactValidation,
-//   contactsControllers.updateContact
-// );
+contactsRouter.put(
+  "/:id",
+  isValidId,
+  updateContactValidation,
+  contactsControllers.updateContact
+);
 
 contactsRouter.delete("/:id", isValidId, contactsControllers.deleteContact);
+
+contactsRouter.patch(
+  "/:id/favorite",
+  isValidId,
+  contactsControllers.updateStatusContact
+);
 
 export default contactsRouter;
