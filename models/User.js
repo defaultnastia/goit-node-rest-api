@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 import { handleServerError, setUpdateOptions } from "./hooks.js";
-import { emailRegExp } from "../constants/user-constants.js";
+import { emailRegExp, subscriptionsList } from "../constants/user-constants.js";
 
 const userSchema = new Schema(
   {
@@ -10,13 +10,13 @@ const userSchema = new Schema(
     },
     email: {
       type: String,
+      match: emailRegExp,
       required: [true, "Email is required"],
       unique: true,
-      match: emailRegExp,
     },
     subscription: {
       type: String,
-      enum: ["starter", "pro", "business"],
+      enum: subscriptionsList,
       default: "starter",
     },
     token: {
@@ -27,4 +27,12 @@ const userSchema = new Schema(
   { versionKey: false }
 );
 
-export default userSchema;
+userSchema.post("save", handleServerError);
+
+userSchema.pre("findOneAndUpdate", setUpdateOptions);
+
+userSchema.post("findOneAndUpdate", handleServerError);
+
+const User = model("user", userSchema);
+
+export default User;

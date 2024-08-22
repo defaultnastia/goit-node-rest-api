@@ -1,5 +1,5 @@
 import { Router } from "express";
 
-const authRouter = new Router();
+const authRouter = Router();
 
 export default authRouter;
