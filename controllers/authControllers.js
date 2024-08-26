@@ -1,22 +1,43 @@
-import HttpError from "../helpers/HttpError.js";
 import controllerWrapper from "../decorators/controllerWrapper.js";
 import * as authServices from "../services/authServices.js";
 
-const signup = async (req, res) => {
-  const newUser = await authServices.signup(req.body);
+const register = async (req, res) => {
+  const newUser = await authServices.register(req.body);
 
   res.status(201).json({
-    email: newUser.email,
-    subscription: newUser.subscription,
+    user: {
+      email: newUser.email,
+      subscription: newUser.subscription,
+    },
   });
 };
 
-const signin = async (req, res) => {
-  const { token } = await authServices.signin(req.body);
-  res.json({ token });
+const login = async (req, res) => {
+  const { token, user } = await authServices.login(req.body);
+  res.json({
+    token: token,
+    user: {
+      email: user.email,
+      subscription: user.subscription,
+    },
+  });
+};
+
+const logout = async (req, res) => {
+  const { _id } = req.user;
+  await authServices.updateUser({ _id }, { token: "" });
+
+  res.status(204).send();
+};
+
+const current = async (req, res) => {
+  const { email, subscription } = req.user;
+  res.json({ email: email, subscription: subscription });
 };
 
 export default {
-  signup: controllerWrapper(signup),
-  signin: controllerWrapper(signin),
+  register: controllerWrapper(register),
+  login: controllerWrapper(login),
+  current: controllerWrapper(current),
+  logout: controllerWrapper(logout),
 };

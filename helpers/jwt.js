@@ -4,11 +4,11 @@ export const createToken = (payload) => {
   return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "24h" });
 };
 
-// export const verifyToken = (token) => {
-//   try {
-//     const payload = jwt.verify(token, process.env.JWT_SECRET);
-//     return { data: payload };
-//   } catch (error) {
-//     return { error };
-//   }
-// };
+export const verifyToken = (token) => {
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    return { data: payload };
+  } catch (error) {
+    return { error };
+  }
+};

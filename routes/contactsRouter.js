@@ -7,12 +7,15 @@ import {
   updateContactStatusSchema,
 } from "../schemas/contactsSchemas.js";
 import isValidId from "../middleware/isValidId.js";
+import authenticate from "../middleware/authenticate.js";
 
 const createContactValidation = validateBody(createContactSchema);
 const updateContactValidation = validateBody(updateContactSchema);
 const updateContactStatusValidation = validateBody(updateContactStatusSchema);
 
 const contactsRouter = express.Router();
+
+contactsRouter.use(authenticate);
 
 contactsRouter.get("/", contactsControllers.getAllContacts);
 
