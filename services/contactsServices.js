@@ -1,7 +1,10 @@
 import Contact from "../models/Contact.js";
 
-export function listContacts(filter, skip, limit) {
-  return Contact.find(filter)
+export function listContacts(filter, params) {
+  const { skip, limit, favorite } = params;
+  const localFilter = favorite ? { ...filter, favorite: true } : { ...filter };
+
+  return Contact.find(localFilter)
     .skip(skip)
     .limit(limit)
     .populate("owner", "email");
