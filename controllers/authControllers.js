@@ -1,5 +1,11 @@
 import controllerWrapper from "../decorators/controllerWrapper.js";
+import HttpError from "../helpers/HttpError.js";
 import * as authServices from "../services/authServices.js";
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
+import Jimp from "jimp";
+
+const avatarsPath = path.resolve("public", "avatars");
 
 const register = async (req, res) => {
   const newUser = await authServices.register(req.body);
@@ -52,10 +58,43 @@ const updateSubscription = async (req, res) => {
   });
 };
 
+const updateAvatar = async (req, res) => {
+  if (!req.file) {
+    throw HttpError(400, "No picture found, please check the request data");
+  }
+
+  const { path: tempPath, filename } = req.file;
+
+  const newPath = path.join(avatarsPath, filename);
+  await fs.rename(tempPath, newPath);
+
+  Jimp.read(newPath, (err, img) => {
+    if (err) throw HttpError(500, err);
+    img.resize(256, 256).write(newPath);
+  });
+
+  const { _id } = req.user;
+  const avatar = path.join("avatars", filename);
+
+  const updatedData = await authServices.updateUser(
+    { _id },
+    { avatarURL: avatar }
+  );
+
+  res.json({
+    message: "Avatar was updated",
+    user: {
+      email: updatedData.email,
+      newAvatarExternalLink: `${process.env.HOST}:${process.env.PORT}/${updatedData.avatarURL}`,
+    },
+  });
+};
+
 export default {
   register: controllerWrapper(register),
   login: controllerWrapper(login),
   current: controllerWrapper(current),
   logout: controllerWrapper(logout),
   updateSubscription: controllerWrapper(updateSubscription),
+  updateAvatar: controllerWrapper(updateAvatar),
 };
