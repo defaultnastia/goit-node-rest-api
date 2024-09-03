@@ -8,6 +8,11 @@ export const findUser = (filter) => User.findOne(filter);
 
 export const updateUser = (filter, data) => User.findOneAndUpdate(filter, data);
 
+// export const updateUser = (filter, data) => {
+//   console.log(filter, data);
+//   return User.findOneAndUpdate(filter, data);
+// };
+
 export const register = async (data) => {
   const { email, password } = data;
   const user = await findUser({ email });

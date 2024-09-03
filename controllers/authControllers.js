@@ -4,6 +4,7 @@ import * as authServices from "../services/authServices.js";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import Jimp from "jimp";
+import { log } from "node:console";
 
 const avatarsPath = path.resolve("public", "avatars");
 
@@ -67,14 +68,18 @@ const updateAvatar = async (req, res) => {
 
   const newPath = path.join(avatarsPath, filename);
   await fs.rename(tempPath, newPath);
+  console.log(newPath);
 
   Jimp.read(newPath, (err, img) => {
     if (err) throw HttpError(500, err);
     img.resize(256, 256).write(newPath);
   });
 
-  const { _id } = req.user;
+  const { _id, avatarURL } = req.user;
   const avatar = path.join("avatars", filename);
+
+  const oldAvatarPath = path.resolve("public", avatarURL);
+  await fs.unlink(oldAvatarPath);
 
   const updatedData = await authServices.updateUser(
     { _id },
