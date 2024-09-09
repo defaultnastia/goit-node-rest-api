@@ -1,10 +1,9 @@
-import controllerWrapper from "../decorators/controllerWrapper.js";
-import HttpError from "../helpers/HttpError.js";
-import * as authServices from "../services/authServices.js";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import Jimp from "jimp";
-import { log } from "node:console";
+import * as authServices from "../services/authServices.js";
+import controllerWrapper from "../decorators/controllerWrapper.js";
+import HttpError from "../helpers/HttpError.js";
 
 const avatarsPath = path.resolve("public", "avatars");
 
@@ -16,6 +15,24 @@ const register = async (req, res) => {
       email: newUser.email,
       subscription: newUser.subscription,
     },
+  });
+};
+
+const verify = async (req, res) => {
+  const { verificationToken } = req.params;
+  await authServices.verifyEmail(verificationToken);
+
+  res.json({
+    message: "Email is verified",
+  });
+};
+
+const resendVerification = async (req, res) => {
+  const { email } = req.body;
+  await authServices.resendVerificationEmail(email);
+
+  res.json({
+    message: "Verification email is resent",
   });
 };
 
@@ -68,7 +85,6 @@ const updateAvatar = async (req, res) => {
 
   const newPath = path.join(avatarsPath, filename);
   await fs.rename(tempPath, newPath);
-  console.log(newPath);
 
   Jimp.read(newPath, (err, img) => {
     if (err) throw HttpError(500, err);
@@ -97,9 +113,11 @@ const updateAvatar = async (req, res) => {
 
 export default {
   register: controllerWrapper(register),
+  verify: controllerWrapper(verify),
   login: controllerWrapper(login),
   current: controllerWrapper(current),
   logout: controllerWrapper(logout),
   updateSubscription: controllerWrapper(updateSubscription),
   updateAvatar: controllerWrapper(updateAvatar),
+  resendVerification: controllerWrapper(resendVerification),
 };
