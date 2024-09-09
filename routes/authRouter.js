@@ -8,6 +8,7 @@ import {
   userRegisterSchema,
   userUpdateSchema,
 } from "../schemas/usersSchemas.js";
+import upload from "../middleware/upload.js";
 
 const registerMiddleware = validateBody(userRegisterSchema);
 const loginMiddleware = validateBody(userLoginSchema);
@@ -28,6 +29,13 @@ authRouter.patch(
   authenticate,
   updateMiddleware,
   authControllers.updateSubscription
+);
+
+authRouter.patch(
+  "/avatars",
+  upload.single("avatar"),
+  authenticate,
+  authControllers.updateAvatar
 );
 
 export default authRouter;
